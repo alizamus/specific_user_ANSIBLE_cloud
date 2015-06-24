@@ -1,0 +1,92 @@
+---
+- name: test the cloud
+  hosts: cloud
+  vars_files:
+    - config_vars.yml
+  tasks:
+    - name: install git
+      apt: name=git
+    - name: set the time zone variables
+      copy: >
+        content='America/New_York'
+        dest=/etc/timezone
+        owner=root
+        group=root
+        mode=0644
+        backup=yes
+      notify:
+        - update time zone
+    - name: creating the tenants
+      keystone_user_custom: > 
+        tenant={{ name }}
+        tenant_description="new tenant" 
+        login_tenant_name=admin
+        login_user=admin
+        login_password={{ admin_pass }}
+    - name: assiggn user to the tenat
+      keystone_user_custom: >
+        user={{ name }} 
+        tenant={{ name }}
+        password={{ name }}
+        login_tenant_name=admin
+        login_user=admin
+        login_password={{ admin_pass }}
+    - name: assiggn admin user to the projects
+      keystone_user_custom: >
+        user=admin
+        tenant={{ name }}
+        password={{ admin_pass }}
+        login_tenant_name=admin
+        login_user=admin
+        login_password={{ admin_pass }}
+    - name: apply the admin role to the test user
+      keystone_user_custom: >
+        role=admin 
+        user={{ name }}
+        tenant={{ name }}
+        login_tenant_name=admin
+        login_user=admin
+        login_password={{ admin_pass }}
+    - name: apply the admin role to admin user in the project
+      keystone_user_custom: >
+        role=admin 
+        user=admin
+        tenant={{ name }}
+        login_tenant_name=admin
+        login_user=admin
+        login_password={{ admin_pass }}
+    - name: Create a network for the users
+      neutron_network_custom: >
+        name={{'public-'+ name +'-net' }}
+        state=present
+        router_external=yes
+        login_username={{ name }}
+        login_password={{ name }}
+        login_tenant_name={{ name }}
+        auth_url='http://127.0.0.1:5000/v2.0/'
+    - name: Clonning the repository
+      git: >
+        repo=https://github.com/alizamus/specific_user_cloud-config.git
+        dest=/root/code
+        force=yes
+    - name: Adding an IPAM
+      command: /root/code/config --username admin --password {{ admin_pass }} --tenant admin --api-server 127.0.0.1 add ipam ipam-default
+    - name: assigning the route target for the networks
+      command: /root/code/add-network.py --user={{ name }} --datacenter={{ data_center_nummber }}  --r_target={{ route_target }} --user_ip={{ user_ip }}
+    - name: Create a floating ip pool for the users
+      command: /root/code/add-floating.py --user={{ name }} --datacenter={{ data_center_nummber }}
+    - name: Create a subnet for the users
+      neutron_subnet_custom: >
+        state=present
+        login_username={{ name }}
+        login_password={{ name }}
+        login_tenant_name={{ name }}
+        tenant_name={{ name }}
+        network_name={{'public-'+ name +'-net' }}
+        name={{'public-' + name +'-subnet' }}
+        auth_url='http://127.0.0.1:5000/v2.0/'
+        datacenter_number={{ data_center_nummber }}
+        user_ip={{ user_ip }}
+  handlers:
+    - name: update time zone
+      command: dpkg-reconfigure --frontend noninteractive tzdata
