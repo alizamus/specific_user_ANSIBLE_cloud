@@ -16,6 +16,12 @@ if __name__ == '__main__':
 	user_ip = raw_input()
 	print 'Please enter the route target'
 	route_target = raw_input()
+	print 'Do you want the images to be created? (yes or no)?'
+	image_q = raw_input()
+	if image_q == 'yes':
+		image_q == 'true'
+	else:
+		image_q == 'false'
 	f = open('config_vars.yml', 'w')
 	f.write('data_center_nummber: '+ str(data_center_num))
 	f.write('\n')
@@ -26,6 +32,8 @@ if __name__ == '__main__':
 	f.write('name: '+ project_name)
 	f.write('\n')
 	f.write('user_ip: '+ user_ip)
+	f.write('\n')
+	f.write('image: '+ image_q)
 	f.close()
 	print 'Enter the IP of the config node'
 	config_IP = raw_input()
