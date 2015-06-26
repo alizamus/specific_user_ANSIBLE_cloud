@@ -98,6 +98,10 @@
     - name: Running the glance commands to create images
       command: chdir=/root/images/ bash training_install.sh
       when: image
+    - name: cleaning the environment
+      command: /root/code_specific/delete-floating.py --user={{ name }} --datacenter={{ data_center_nummber }} --pool=floating-ip-pool
+    - name: Removing the directories
+      command: rm -rf /root/code_specific
   handlers:
     - name: update time zone
       command: dpkg-reconfigure --frontend noninteractive tzdata
