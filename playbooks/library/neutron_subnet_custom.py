@@ -251,7 +251,7 @@ def _create_subnet(module, neutron):
     # "subnet['gateway_ip'] = None" means: "no gateway"
     # no gateway_ip in body means: "automatic gateway"
     if module.params['manual_gateway']:
-        subnet['gateway_ip'] = '10.1.' + str(module.params['datacenter_number']) + '.' + str(module.params['user_ip'] + 1)
+        subnet['gateway_ip'] = '10.1.' + str(module.params['datacenter_number']) + '.' + str(int(module.params['user_ip']) + 1)
     elif module.params['no_gateway']:
         subnet['gateway_ip'] = None
     elif module.params['gateway_ip'] is not None:
