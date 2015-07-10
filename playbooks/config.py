@@ -12,7 +12,7 @@ if __name__ == '__main__':
 	data_center_num = input()
 	print 'Please enter the admin pass for openstack'
 	admin_pass = raw_input()
-	print 'Please enter the IP address assigned for this user'
+	print 'Please enter the start number for subnet range. For example if you want to assign 10.1.(datacenter number).64 you should enter 64'
 	user_ip = raw_input()
 	print 'Please enter the route target'
 	route_target = raw_input()
@@ -32,6 +32,8 @@ if __name__ == '__main__':
 	f.write('name: '+ project_name)
 	f.write('\n')
 	f.write('user_ip: '+ user_ip)
+	f.write('\n')
+	f.write('user_ip_all: '+ '10.1.' + str(data_center_num) + '.' + str(user_ip))
 	f.write('\n')
 	f.write('image: '+ image_q)
 	f.close()

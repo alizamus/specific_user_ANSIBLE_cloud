@@ -237,7 +237,7 @@ def _create_subnet(module, neutron):
             'gateway_ip': module.params['gateway_ip'],
             'dns_nameservers': module.params['dns_nameservers'],
             'network_id': _os_network_id,
-            'cidr': module.params['user_ip']+'/29',
+            'cidr': '10.1.' + str(module.params['datacenter_number']) + '.' + str(module.params['user_ip'])+'/29',
             'host_routes': module.params['host_routes'],
     }
     if module.params['allocation_pool_start'] and module.params['allocation_pool_end']:
@@ -250,7 +250,9 @@ def _create_subnet(module, neutron):
         subnet.update({'allocation_pools': allocation_pools})
     # "subnet['gateway_ip'] = None" means: "no gateway"
     # no gateway_ip in body means: "automatic gateway"
-    if module.params['no_gateway']:
+    if module.params['manual_gateway']:
+        subnet['gateway_ip'] = '10.1.' + str(module.params['datacenter_number']) + '.' + str(module.params['user_ip'] + 1)
+    elif module.params['no_gateway']:
         subnet['gateway_ip'] = None
     elif module.params['gateway_ip'] is not None:
         subnet['gateway_ip'] = module.params['gateway_ip']
@@ -305,7 +307,8 @@ def main():
             ipv6_address_mode = dict(default=None, choices=ipv6_mode_choices),
             host_routes = dict(default=None),
             datacenter_number = dict(default=None),
-            user_ip = dict(required=True)
+            user_ip = dict(required=True),
+            manual_gateway = dict(default=False, type='bool')
         ),
     )
     neutron = _get_neutron_client(module, module.params)

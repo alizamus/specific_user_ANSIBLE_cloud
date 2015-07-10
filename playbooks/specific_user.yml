@@ -72,7 +72,7 @@
     - name: Adding an IPAM
       command: /root/code_specific/config --username admin --password {{ admin_pass }} --tenant admin --api-server 127.0.0.1 add ipam ipam-default
     - name: assigning the route target for the networks
-      command: /root/code_specific/add-network.py --user={{ name }} --datacenter={{ data_center_nummber }}  --r_target={{ route_target }} --user_ip={{ user_ip }}
+      command: /root/code_specific/add-network.py --user={{ name }} --datacenter={{ data_center_nummber }}  --r_target={{ route_target }} --user_ip={{ user_ip_all }}
     - name: Create a floating ip pool for the users
       command: /root/code_specific/add-floating.py --user={{ name }} --datacenter={{ data_center_nummber }}
     - name: Create a subnet for the users
@@ -87,6 +87,7 @@
         auth_url='http://127.0.0.1:5000/v2.0/'
         datacenter_number={{ data_center_nummber }}
         user_ip={{ user_ip }}
+        manual_gateway=true
     - name: copying the image files. Please wait. This task may take awhile
       copy: >
         src=~/copy/ 
