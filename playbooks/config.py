@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import sys
-
+import os
 
 
 if __name__ == '__main__':
@@ -57,6 +57,8 @@ if __name__ == '__main__':
 	f.write(' ')
 	f.write('ansible_sudo_pass=' + config_pass)
 	f.close()
+        command = 'ssh-keygen -R ' + str(config_IP)
+        os.system(command)
 	print '<<<<<<<<<< configuration is done >>>>>>>>>>'
 	print '<<<<<<<<<< Now you can run this command: >>>>>>>>>> '
 	print '<<<<<<<<<< ansible-playbook specific_user.yml >>>>>>>>>>'
